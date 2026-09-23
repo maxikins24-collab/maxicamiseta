@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaxiCamisetas</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+        }
+
+        header {
+            background: white;
+            color: black;
+            text-align: center;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .contenedor {
+            width: 90%;
+            max-width: 800px;
+            margin: 30px auto;
+        }
+
+        .caja {
+            background: #222;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 7px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px 18px;
+            margin: 7px 4px 7px 0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            background: white;
+            color: black;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .rojo {
+            background: #e53935;
+            color: white;
+        }
+
+        .verde {
+            background: #20c463;
+            color: white;
+        }
+
+        .amarillo {
+            background: #ffd21f;
+            color: black;
+        }
+
+        .azul {
+            background: #2196f3;
+            color: white;
+        }
+
+        .camiseta {
+            border: 1px solid #555;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 10px;
+        }
+
+        .pedido {
+            background: #333;
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 15px;
+        }
+
+        .pendiente {
+            border-left: 6px solid #ffd21f;
+        }
+
+        .aceptado {
+            border-left: 6px solid #2196f3;
+        }
+
+        .listo {
+            border-left: 6px solid #20c463;
+        }
+
+        .denegado {
+            border-left: 6px solid #e53935;
+        }
+
+        .oculto {
+            display: none;
+        }
+
+        .separador {
+            border: 0;
+            border-top: 1px solid #555;
+            margin: 20px 0;
+        }
+
+        h2,
+        h3 {
+            margin-top: 0;
+        }
+
+        #mensaje,
+        #mensajeRegistro,
+        #mensajeLogin {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>MaxiCamisetas</h1>
+    <p>Personaliza tu camiseta de fútbol</p>
+</header>
+
+<div class="contenedor">
+
+    <!-- REGISTRO -->
+
+    <div id="registro" class="caja">
+        <h2>Crear cuenta</h2>
+
+        <input
+            type="text"
+            id="nuevoUsuario"
+            placeholder="Nombre de usuario"
+        >
+
+        <input
+            type="password"
+            id="nuevaContraseña"
+            placeholder="Contraseña"
+        >
+
+        <button onclick="registrarse()">
+            Crear cuenta
+        </button>
+
+        <button onclick="mostrarLogin()">
+            Ya tengo cuenta
+        </button>
+
+        <p id="mensajeRegistro"></p>
+    </div>
+
+
+    <!-- LOGIN -->
+
+    <div id="login" class="caja oculto">
+
+        <h2>Iniciar sesión</h2>
+
+        <input
+            type="text"
+            id="usuarioLogin"
+            placeholder="Usuario"
+        >
+
+        <input
+            type="password"
+            id="contraseñaLogin"
+            placeholder="Contraseña"
+        >
+
+        <button onclick="iniciarSesion()">
+            Entrar
+        </button>
+
+        <button onclick="mostrarRegistro()">
+            Crear cuenta
+        </button>
+
+        <p id="mensajeLogin"></p>
+
+    </div>
+
+
+    <!-- PANEL -->
+
+    <div id="panel" class="oculto">
+
+        <div class="caja">
+
+            <h2 id="bienvenida"></h2>
+
+            <button
+                onclick="cerrarSesion()"
+                class="rojo"
+            >
+                Cerrar sesión
+            </button>
+
+        </div>
+
+
+        <!-- HACER PEDIDO -->
+
+        <div
+            id="zonaPedido"
+            class="caja"
+        >
+
+            <h2>Hacer pedido</h2>
+
+            <p>
+                Puedes pedir hasta
+                <b>3 camisetas por pedido</b>.
+            </p>
+
+            <div class="camiseta">
+
+                <h3>Camiseta 1</h3>
+
+                <input
+                    type="text"
+                    id="equipo1"
+                    placeholder="Equipo"
+                >
+
+                <input
+                    type="text"
+                    id="jugador1"
+                    placeholder="Jugador"
+                >
+
+                <input
+                    type="number"
+                    id="numero1"
+                    placeholder="Número"
+                >
+
+            </div>
+
+
+            <div
+                id="camiseta2"
+                class="camiseta oculto"
+            >
+
+                <h3>Camiseta 2</h3>
+
+                <input
+                    type="text"
+                    id="equipo2"
+                    placeholder="Equipo"
+                >
+
+                <input
+                    type="text"
+                    id="jugador2"
+                    placeholder="Jugador"
+                >
+
+                <input
+                    type="number"
+                    id="numero2"
+                    placeholder="Número"
+                >
+
+            </div>
+
+
+            <div
+                id="camiseta3"
+                class="camiseta oculto"
+            >
+
+                <h3>Camiseta 3</h3>
+
+                <input
+                    type="text"
+                    id="equipo3"
+                    placeholder="Equipo"
+                >
+
+                <input
+                    type="text"
+                    id="jugador3"
+                    placeholder="Jugador"
+                >
+
+                <input
+                    type="number"
+                    id="numero3"
+                    placeholder="Número"
+                >
+
+            </div>
+
+
+            <button
+                id="botonAgregar2"
+                onclick="agregarCamiseta2()"
+            >
+                + Agregar camiseta
+            </button>
+
+
+            <button
+                id="botonAgregar3"
+                onclick="agregarCamiseta3()"
+                class="oculto"
+            >
+                + Agregar tercera camiseta
+            </button>
+
+
+            <br>
+
+
+            <button
+                onclick="hacerPedido()"
+                class="verde"
+            >
+                Hacer pedido
+            </button>
+
+
+            <p id="mensaje"></p>
+
+        </div>
+
+
+        <!-- MIS PEDIDOS -->
+
+        <div class="caja">
+
+            <h2>Mis pedidos</h2>
+
+            <p id="contadorPedidos"></p>
+
+            <div id="pedidos"></div>
+
+        </div>
+
+
+        <!-- PANEL ADMIN -->
+
+        <div
+            id="zonaAdmin"
+            class="oculto"
+        >
+
+            <!-- PEDIDOS PENDIENTES -->
+
+            <div class="caja">
+
+                <h2>📋 Pedidos pendientes</h2>
+
+                <div id="listaPendientes"></div>
+
+            </div>
+
+
+            <!-- PEDIDOS ACEPTADOS -->
+
+            <div class="caja">
+
+                <h2>✅ Pedidos aceptados</h2>
+
+                <p>
+                    Estos pedidos están aceptados y todavía
+                    no han sido marcados como listos.
+                </p>
+
+                <div id="listaAceptados"></div>
+
+            </div>
+
+
+            <!-- PEDIDOS LISTOS DE HOY -->
+
+            <div class="caja">
+
+                <h2>📦 Pedidos listos de hoy</h2>
+
+                <p>
+                    Aquí aparecen los pedidos marcados como
+                    listos durante el día de hoy.
+                </p>
+
+                <div id="listaListos"></div>
+
+            </div>
+
+
+            <!-- PEDIDOS DENEGADOS -->
+
+            <div class="caja">
+
+                <h2>❌ Pedidos denegados</h2>
+
+                <div id="listaDenegados"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="MCAM.js"></script>
+
+</body>
+</html>
