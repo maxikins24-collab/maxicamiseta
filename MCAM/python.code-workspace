@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../Desktop/python"
+		},
+		{
+			"path": "../../Desktop/el crack"
+		}
+	],
+	"settings": {
+		"python-envs.defaultEnvManager": "ms-python.python:system",
+		"liveServer.settings.multiRootWorkspaceName": "python"
+	}
+}

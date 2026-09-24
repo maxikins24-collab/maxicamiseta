@@ -1,4 +1,27 @@
-let usuarioActual = localStorage.getItem("usuarioActual") || null;
+// ==========================================
+// SUPABASE
+// ==========================================
+
+const SUPABASE_URL =
+    "https://mbvgjjfzcegqeoikuzzl.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable__x2FSVFaYNEq2jNPsrilBg_6tLlx6aT";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+// ==========================================
+// USUARIO ACTUAL
+// ==========================================
+
+let usuarioActual =
+    localStorage.getItem("usuarioActual") || null;
+
 
 const ADMIN_USUARIO = "MaxiKings24";
 const ADMIN_CONTRASENA = "2410";
@@ -12,28 +35,41 @@ let cantidadCamisetas = 1;
 
 function obtenerUsuarios() {
 
-    let usuarios = JSON.parse(localStorage.getItem("usuarios"));
+    let usuarios =
+        JSON.parse(
+            localStorage.getItem("usuarios")
+        );
 
     if (Array.isArray(usuarios)) {
         return usuarios;
     }
 
+
     usuarios = [];
 
-    // Compatibilidad con la versión antigua
-    let usuarioAntiguo = localStorage.getItem("usuario");
-    let contraseñaAntigua = localStorage.getItem("contraseña");
+
+    let usuarioAntiguo =
+        localStorage.getItem("usuario");
+
+    let contraseñaAntigua =
+        localStorage.getItem("contraseña");
+
 
     if (
         usuarioAntiguo &&
         contraseñaAntigua &&
-        usuarioAntiguo.toLowerCase() !== ADMIN_USUARIO.toLowerCase()
+        usuarioAntiguo.toLowerCase() !==
+        ADMIN_USUARIO.toLowerCase()
     ) {
 
         usuarios.push({
+
             usuario: usuarioAntiguo,
+
             contraseña: contraseñaAntigua
+
         });
+
 
         localStorage.setItem(
             "usuarios",
@@ -41,41 +77,78 @@ function obtenerUsuarios() {
         );
     }
 
+
     return usuarios;
 }
 
 
 // ==========================================
-// OBTENER PEDIDOS
+// FECHA DE HOY
 // ==========================================
 
-function obtenerPedidos() {
+function obtenerFechaHoy() {
 
-    let pedidos = JSON.parse(localStorage.getItem("pedidos"));
-
-    if (!Array.isArray(pedidos)) {
-        pedidos = [];
-    }
-
-    return pedidos;
-}
+    let fecha = new Date();
 
 
-// ==========================================
-// GUARDAR PEDIDOS
-// ==========================================
+    let año =
+        fecha.getFullYear();
 
-function guardarPedidos(pedidos) {
 
-    localStorage.setItem(
-        "pedidos",
-        JSON.stringify(pedidos)
+    let mes =
+        String(
+            fecha.getMonth() + 1
+        ).padStart(2, "0");
+
+
+    let dia =
+        String(
+            fecha.getDate()
+        ).padStart(2, "0");
+
+
+    return (
+        año +
+        "-" +
+        mes +
+        "-" +
+        dia
     );
 }
 
 
 // ==========================================
-// MOSTRAR REGISTRO
+// OBTENER PEDIDOS DE SUPABASE
+// ==========================================
+
+async function obtenerPedidos() {
+
+    const { data, error } =
+        await supabaseClient
+            .from("pedidos")
+            .select("*")
+            .order("id", {
+                ascending: true
+            });
+
+
+    if (error) {
+
+        console.error(
+            "Error obteniendo pedidos:",
+            error
+        );
+
+        return [];
+    }
+
+
+    return data || [];
+}
+
+
+// ==========================================
+// REGISTRO
 // ==========================================
 
 function mostrarRegistro() {
@@ -85,6 +158,7 @@ function mostrarRegistro() {
         .classList
         .remove("oculto");
 
+
     document
         .getElementById("login")
         .classList
@@ -93,7 +167,7 @@ function mostrarRegistro() {
 
 
 // ==========================================
-// MOSTRAR LOGIN
+// LOGIN
 // ==========================================
 
 function mostrarLogin() {
@@ -102,6 +176,7 @@ function mostrarLogin() {
         .getElementById("registro")
         .classList
         .add("oculto");
+
 
     document
         .getElementById("login")
@@ -122,13 +197,17 @@ function registrarse() {
             .value
             .trim();
 
+
     let contraseña =
         document
             .getElementById("nuevaContraseña")
             .value;
 
+
     let mensaje =
-        document.getElementById("mensajeRegistro");
+        document.getElementById(
+            "mensajeRegistro"
+        );
 
 
     if (
@@ -143,8 +222,6 @@ function registrarse() {
     }
 
 
-    // El nombre del admin está reservado
-
     if (
         usuario.toLowerCase() ===
         ADMIN_USUARIO.toLowerCase()
@@ -157,19 +234,19 @@ function registrarse() {
     }
 
 
-    let usuarios = obtenerUsuarios();
+    let usuarios =
+        obtenerUsuarios();
 
 
-    // No permitir usuarios repetidos
+    let existe =
+        usuarios.some(function(persona) {
 
-    let existe = usuarios.some(function(persona) {
+            return (
+                persona.usuario.toLowerCase() ===
+                usuario.toLowerCase()
+            );
 
-        return (
-            persona.usuario.toLowerCase() ===
-            usuario.toLowerCase()
-        );
-
-    });
+        });
 
 
     if (existe) {
@@ -230,13 +307,17 @@ function iniciarSesion() {
             .value
             .trim();
 
+
     let contraseña =
         document
             .getElementById("contraseñaLogin")
             .value;
 
+
     let mensaje =
-        document.getElementById("mensajeLogin");
+        document.getElementById(
+            "mensajeLogin"
+        );
 
 
     // ADMIN
@@ -250,10 +331,12 @@ function iniciarSesion() {
         usuarioActual =
             ADMIN_USUARIO;
 
+
         localStorage.setItem(
             "usuarioActual",
             usuarioActual
         );
+
 
         entrarAlPanel();
 
@@ -263,18 +346,21 @@ function iniciarSesion() {
 
     // USUARIO NORMAL
 
-    let usuarios = obtenerUsuarios();
+    let usuarios =
+        obtenerUsuarios();
 
 
-    let encontrado = usuarios.find(function(persona) {
+    let encontrado =
+        usuarios.find(function(persona) {
 
-        return (
-            persona.usuario.toLowerCase() ===
-            usuario.toLowerCase() &&
-            persona.contraseña === contraseña
-        );
+            return (
+                persona.usuario.toLowerCase() ===
+                usuario.toLowerCase() &&
+                persona.contraseña ===
+                contraseña
+            );
 
-    });
+        });
 
 
     if (!encontrado) {
@@ -304,17 +390,19 @@ function iniciarSesion() {
 // ENTRAR AL PANEL
 // ==========================================
 
-function entrarAlPanel() {
+async function entrarAlPanel() {
 
     document
         .getElementById("registro")
         .classList
         .add("oculto");
 
+
     document
         .getElementById("login")
         .classList
         .add("oculto");
+
 
     document
         .getElementById("panel")
@@ -325,7 +413,8 @@ function entrarAlPanel() {
     document
         .getElementById("bienvenida")
         .textContent =
-        "Bienvenido, " + usuarioActual;
+        "Bienvenido, " +
+        usuarioActual;
 
 
     if (
@@ -338,13 +427,14 @@ function entrarAlPanel() {
             .classList
             .remove("oculto");
 
+
         document
             .getElementById("zonaPedido")
             .classList
             .add("oculto");
 
 
-        cargarPanelAdmin();
+        await cargarPanelAdmin();
 
     } else {
 
@@ -353,46 +443,15 @@ function entrarAlPanel() {
             .classList
             .add("oculto");
 
+
         document
             .getElementById("zonaPedido")
             .classList
             .remove("oculto");
 
 
-        verPedidos();
+        await verPedidos();
     }
-}
-
-
-// ==========================================
-// FECHA DE HOY
-// ==========================================
-
-function obtenerFechaHoy() {
-
-    let fecha = new Date();
-
-    let año =
-        fecha.getFullYear();
-
-    let mes =
-        String(
-            fecha.getMonth() + 1
-        ).padStart(2, "0");
-
-    let dia =
-        String(
-            fecha.getDate()
-        ).padStart(2, "0");
-
-
-    return (
-        año +
-        "-" +
-        mes +
-        "-" +
-        dia
-    );
 }
 
 
@@ -450,33 +509,46 @@ function agregarCamiseta3() {
 // HACER PEDIDO
 // ==========================================
 
-function hacerPedido() {
+async function hacerPedido() {
 
-    let fechaHoy =
-        obtenerFechaHoy();
-
-    let pedidos =
-        obtenerPedidos();
+    let mensaje =
+        document.getElementById("mensaje");
 
 
-    let pedidosHoy =
-        pedidos.filter(function(pedido) {
-
-            return (
-                pedido.usuario === usuarioActual &&
-                pedido.fecha === fechaHoy
-            );
-
-        });
+    mensaje.textContent =
+        "Comprobando pedido...";
 
 
-    if (pedidosHoy.length >= 3) {
+    // ======================================
+    // COMPROBAR LÍMITE DE 3 PEDIDOS HOY
+    // ======================================
 
-        document
-            .getElementById("mensaje")
-            .textContent =
-            "Ya hiciste 3 pedidos hoy. " +
-            "Podrás hacer más mañana.";
+    const { data: pedidosHoyData, error: errorHoy } =
+        await supabaseClient
+            .from("pedidos")
+            .select("id")
+            .eq("usuario", usuarioActual)
+            .eq("fecha", obtenerFechaHoy());
+
+
+    if (errorHoy) {
+
+        console.error(errorHoy);
+
+        mensaje.textContent =
+            "No se pudo comprobar tus pedidos.";
+
+        return;
+    }
+
+
+    if (
+        pedidosHoyData &&
+        pedidosHoyData.length >= 3
+    ) {
+
+        mensaje.textContent =
+            "Ya hiciste 3 pedidos hoy. Podrás hacer más mañana.";
 
         return;
     }
@@ -485,7 +557,9 @@ function hacerPedido() {
     let camisetas = [];
 
 
+    // ======================================
     // CAMISETA 1
+    // ======================================
 
     let equipo1 =
         document
@@ -493,11 +567,13 @@ function hacerPedido() {
             .value
             .trim();
 
+
     let jugador1 =
         document
             .getElementById("jugador1")
             .value
             .trim();
+
 
     let numero1 =
         document
@@ -512,9 +588,7 @@ function hacerPedido() {
         numero1 === ""
     ) {
 
-        document
-            .getElementById("mensaje")
-            .textContent =
+        mensaje.textContent =
             "Completa los datos de la camiseta 1.";
 
         return;
@@ -532,7 +606,9 @@ function hacerPedido() {
     });
 
 
+    // ======================================
     // CAMISETA 2
+    // ======================================
 
     if (cantidadCamisetas >= 2) {
 
@@ -542,11 +618,13 @@ function hacerPedido() {
                 .value
                 .trim();
 
+
         let jugador2 =
             document
                 .getElementById("jugador2")
                 .value
                 .trim();
+
 
         let numero2 =
             document
@@ -561,9 +639,7 @@ function hacerPedido() {
             numero2 === ""
         ) {
 
-            document
-                .getElementById("mensaje")
-                .textContent =
+            mensaje.textContent =
                 "Completa los datos de la camiseta 2.";
 
             return;
@@ -582,7 +658,9 @@ function hacerPedido() {
     }
 
 
+    // ======================================
     // CAMISETA 3
+    // ======================================
 
     if (cantidadCamisetas >= 3) {
 
@@ -592,11 +670,13 @@ function hacerPedido() {
                 .value
                 .trim();
 
+
         let jugador3 =
             document
                 .getElementById("jugador3")
                 .value
                 .trim();
+
 
         let numero3 =
             document
@@ -611,9 +691,7 @@ function hacerPedido() {
             numero3 === ""
         ) {
 
-            document
-                .getElementById("mensaje")
-                .textContent =
+            mensaje.textContent =
                 "Completa los datos de la camiseta 3.";
 
             return;
@@ -632,39 +710,54 @@ function hacerPedido() {
     }
 
 
-    // CREAR PEDIDO
+    // ======================================
+    // GUARDAR EN SUPABASE
+    // ======================================
 
-    let nuevoPedido = {
-
-        id: Date.now(),
+    const nuevoPedido = {
 
         usuario: usuarioActual,
 
-        fecha: fechaHoy,
+        fecha: obtenerFechaHoy(),
 
         estado: "Pendiente",
 
         camisetas: camisetas,
 
-        fechaListo: null
+        "fechaListo": null
 
     };
 
 
-    pedidos.push(nuevoPedido);
+    const { error } =
+        await supabaseClient
+            .from("pedidos")
+            .insert([nuevoPedido]);
 
-    guardarPedidos(pedidos);
+
+    if (error) {
+
+        console.error(
+            "Error guardando pedido:",
+            error
+        );
 
 
-    document
-        .getElementById("mensaje")
-        .textContent =
+        mensaje.textContent =
+            "No se pudo guardar el pedido.";
+
+        return;
+    }
+
+
+    mensaje.textContent =
         "Pedido realizado correctamente.";
 
 
     limpiarFormulario();
 
-    verPedidos();
+
+    await verPedidos();
 }
 
 
@@ -674,17 +767,49 @@ function hacerPedido() {
 
 function limpiarFormulario() {
 
-    document.getElementById("equipo1").value = "";
-    document.getElementById("jugador1").value = "";
-    document.getElementById("numero1").value = "";
+    document.getElementById(
+        "equipo1"
+    ).value = "";
 
-    document.getElementById("equipo2").value = "";
-    document.getElementById("jugador2").value = "";
-    document.getElementById("numero2").value = "";
 
-    document.getElementById("equipo3").value = "";
-    document.getElementById("jugador3").value = "";
-    document.getElementById("numero3").value = "";
+    document.getElementById(
+        "jugador1"
+    ).value = "";
+
+
+    document.getElementById(
+        "numero1"
+    ).value = "";
+
+
+    document.getElementById(
+        "equipo2"
+    ).value = "";
+
+
+    document.getElementById(
+        "jugador2"
+    ).value = "";
+
+
+    document.getElementById(
+        "numero2"
+    ).value = "";
+
+
+    document.getElementById(
+        "equipo3"
+    ).value = "";
+
+
+    document.getElementById(
+        "jugador3"
+    ).value = "";
+
+
+    document.getElementById(
+        "numero3"
+    ).value = "";
 
 
     document
@@ -719,24 +844,27 @@ function limpiarFormulario() {
 // VER MIS PEDIDOS
 // ==========================================
 
-function verPedidos() {
+async function verPedidos() {
 
     let pedidos =
-        obtenerPedidos();
+        await obtenerPedidos();
 
 
     let misPedidos =
         pedidos.filter(function(pedido) {
 
             return (
-                pedido.usuario === usuarioActual
+                pedido.usuario ===
+                usuarioActual
             );
 
         });
 
 
     let contenedor =
-        document.getElementById("pedidos");
+        document.getElementById(
+            "pedidos"
+        );
 
 
     contenedor.innerHTML = "";
@@ -747,7 +875,11 @@ function verPedidos() {
         contenedor.innerHTML =
             "<p>No tienes pedidos todavía.</p>";
 
-        actualizarContador();
+
+        actualizarContador(
+            pedidos
+        );
+
 
         return;
     }
@@ -767,7 +899,9 @@ function verPedidos() {
         });
 
 
-    actualizarContador();
+    actualizarContador(
+        pedidos
+    );
 }
 
 
@@ -783,19 +917,34 @@ function crearHTMLPedido(
     let claseEstado = "";
 
 
-    if (pedido.estado === "Pendiente") {
+    if (
+        pedido.estado === "Pendiente"
+    ) {
+
         claseEstado = "pendiente";
     }
 
-    if (pedido.estado === "Aceptado") {
+
+    if (
+        pedido.estado === "Aceptado"
+    ) {
+
         claseEstado = "aceptado";
     }
 
-    if (pedido.estado === "Listo") {
+
+    if (
+        pedido.estado === "Listo"
+    ) {
+
         claseEstado = "listo";
     }
 
-    if (pedido.estado === "Denegado") {
+
+    if (
+        pedido.estado === "Denegado"
+    ) {
+
         claseEstado = "denegado";
     }
 
@@ -817,7 +966,7 @@ function crearHTMLPedido(
 
     html +=
         "<h3>Pedido #" +
-        pedido.id +
+        escaparHTML(pedido.id) +
         "</h3>";
 
 
@@ -845,7 +994,9 @@ function crearHTMLPedido(
 
         html +=
             "<p><b>Pedido listo el:</b> " +
-            escaparHTML(pedido.fechaListo) +
+            escaparHTML(
+                pedido.fechaListo
+            ) +
             "</p>";
     }
 
@@ -855,35 +1006,46 @@ function crearHTMLPedido(
         indice
     ) {
 
-        html +=
-            "<div>";
+        html += "<div>";
+
 
         html +=
             "<b>Camiseta " +
             (indice + 1) +
             "</b>";
 
+
         html +=
             "<p>Equipo: " +
-            escaparHTML(camiseta.equipo) +
+            escaparHTML(
+                camiseta.equipo
+            ) +
             "</p>";
+
 
         html +=
             "<p>Jugador: " +
-            escaparHTML(camiseta.jugador) +
+            escaparHTML(
+                camiseta.jugador
+            ) +
             "</p>";
+
 
         html +=
             "<p>Número: " +
-            escaparHTML(camiseta.numero) +
+            escaparHTML(
+                camiseta.numero
+            ) +
             "</p>";
 
-        html +=
-            "</div>";
+
+        html += "</div>";
     });
 
 
-    // USUARIO NORMAL
+    // ======================================
+    // USUARIO
+    // ======================================
 
     if (!esAdmin) {
 
@@ -897,7 +1059,9 @@ function crearHTMLPedido(
     }
 
 
-    // ADMIN - PEDIDO PENDIENTE
+    // ======================================
+    // ADMIN - PENDIENTE
+    // ======================================
 
     if (
         esAdmin &&
@@ -923,7 +1087,9 @@ function crearHTMLPedido(
     }
 
 
-    // ADMIN - PEDIDO ACEPTADO
+    // ======================================
+    // ADMIN - ACEPTADO
+    // ======================================
 
     if (
         esAdmin &&
@@ -940,8 +1106,7 @@ function crearHTMLPedido(
     }
 
 
-    html +=
-        "</div>";
+    html += "</div>";
 
 
     return html;
@@ -954,16 +1119,41 @@ function crearHTMLPedido(
 
 function escaparHTML(texto) {
 
-    if (texto === null || texto === undefined) {
+    if (
+        texto === null ||
+        texto === undefined
+    ) {
+
         return "";
     }
 
+
     return String(texto)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
 
@@ -971,10 +1161,9 @@ function escaparHTML(texto) {
 // CONTADOR
 // ==========================================
 
-function actualizarContador() {
-
-    let pedidos =
-        obtenerPedidos();
+function actualizarContador(
+    pedidos
+) {
 
     let fechaHoy =
         obtenerFechaHoy();
@@ -984,15 +1173,20 @@ function actualizarContador() {
         pedidos.filter(function(pedido) {
 
             return (
-                pedido.usuario === usuarioActual &&
-                pedido.fecha === fechaHoy
+                pedido.usuario ===
+                usuarioActual &&
+
+                pedido.fecha ===
+                fechaHoy
             );
 
         }).length;
 
 
     document
-        .getElementById("contadorPedidos")
+        .getElementById(
+            "contadorPedidos"
+        )
         .textContent =
         "Pedidos realizados hoy: " +
         cantidad +
@@ -1004,42 +1198,48 @@ function actualizarContador() {
 // ELIMINAR PEDIDO
 // ==========================================
 
-function eliminarPedido(id) {
+async function eliminarPedido(id) {
 
-    let pedidos =
-        obtenerPedidos();
-
-
-    pedidos =
-        pedidos.filter(function(pedido) {
-
-            return !(
-                pedido.id === id &&
-                pedido.usuario === usuarioActual
+    const { error } =
+        await supabaseClient
+            .from("pedidos")
+            .delete()
+            .eq("id", id)
+            .eq(
+                "usuario",
+                usuarioActual
             );
 
-        });
+
+    if (error) {
+
+        console.error(error);
+
+        alert(
+            "No se pudo eliminar el pedido."
+        );
+
+        return;
+    }
 
 
-    guardarPedidos(pedidos);
-
-    verPedidos();
+    await verPedidos();
 }
 
 
 // ==========================================
-// CARGAR PANEL DEL ADMIN
+// CARGAR PANEL ADMIN
 // ==========================================
 
-function cargarPanelAdmin() {
+async function cargarPanelAdmin() {
 
-    mostrarPendientes();
+    await mostrarPendientes();
 
-    mostrarAceptados();
+    await mostrarAceptados();
 
-    mostrarListosDeHoy();
+    await mostrarListosDeHoy();
 
-    mostrarDenegados();
+    await mostrarDenegados();
 }
 
 
@@ -1047,17 +1247,18 @@ function cargarPanelAdmin() {
 // MOSTRAR PENDIENTES
 // ==========================================
 
-function mostrarPendientes() {
+async function mostrarPendientes() {
 
     let pedidos =
-        obtenerPedidos();
+        await obtenerPedidos();
 
 
     let pendientes =
         pedidos.filter(function(pedido) {
 
             return (
-                pedido.estado === "Pendiente"
+                pedido.estado ===
+                "Pendiente"
             );
 
         });
@@ -1072,7 +1273,9 @@ function mostrarPendientes() {
     contenedor.innerHTML = "";
 
 
-    if (pendientes.length === 0) {
+    if (
+        pendientes.length === 0
+    ) {
 
         contenedor.innerHTML =
             "<p>No hay pedidos pendientes.</p>";
@@ -1100,17 +1303,18 @@ function mostrarPendientes() {
 // MOSTRAR ACEPTADOS
 // ==========================================
 
-function mostrarAceptados() {
+async function mostrarAceptados() {
 
     let pedidos =
-        obtenerPedidos();
+        await obtenerPedidos();
 
 
     let aceptados =
         pedidos.filter(function(pedido) {
 
             return (
-                pedido.estado === "Aceptado"
+                pedido.estado ===
+                "Aceptado"
             );
 
         });
@@ -1125,7 +1329,9 @@ function mostrarAceptados() {
     contenedor.innerHTML = "";
 
 
-    if (aceptados.length === 0) {
+    if (
+        aceptados.length === 0
+    ) {
 
         contenedor.innerHTML =
             "<p>No hay pedidos aceptados pendientes de preparación.</p>";
@@ -1153,10 +1359,10 @@ function mostrarAceptados() {
 // MOSTRAR LISTOS DE HOY
 // ==========================================
 
-function mostrarListosDeHoy() {
+async function mostrarListosDeHoy() {
 
     let pedidos =
-        obtenerPedidos();
+        await obtenerPedidos();
 
 
     let hoy =
@@ -1167,8 +1373,11 @@ function mostrarListosDeHoy() {
         pedidos.filter(function(pedido) {
 
             return (
-                pedido.estado === "Listo" &&
-                pedido.fechaListo === hoy
+                pedido.estado ===
+                "Listo" &&
+
+                pedido.fechaListo ===
+                hoy
             );
 
         });
@@ -1183,7 +1392,9 @@ function mostrarListosDeHoy() {
     contenedor.innerHTML = "";
 
 
-    if (listos.length === 0) {
+    if (
+        listos.length === 0
+    ) {
 
         contenedor.innerHTML =
             "<p>No hay pedidos listos hoy.</p>";
@@ -1211,17 +1422,18 @@ function mostrarListosDeHoy() {
 // MOSTRAR DENEGADOS
 // ==========================================
 
-function mostrarDenegados() {
+async function mostrarDenegados() {
 
     let pedidos =
-        obtenerPedidos();
+        await obtenerPedidos();
 
 
     let denegados =
         pedidos.filter(function(pedido) {
 
             return (
-                pedido.estado === "Denegado"
+                pedido.estado ===
+                "Denegado"
             );
 
         });
@@ -1236,7 +1448,9 @@ function mostrarDenegados() {
     contenedor.innerHTML = "";
 
 
-    if (denegados.length === 0) {
+    if (
+        denegados.length === 0
+    ) {
 
         contenedor.innerHTML =
             "<p>No hay pedidos denegados.</p>";
@@ -1264,34 +1478,34 @@ function mostrarDenegados() {
 // ACEPTAR PEDIDO
 // ==========================================
 
-function aceptarPedido(id) {
+async function aceptarPedido(id) {
 
-    let pedidos =
-        obtenerPedidos();
+    const { error } =
+        await supabaseClient
+            .from("pedidos")
+            .update({
+
+                estado: "Aceptado",
+
+                fechaListo: null
+
+            })
+            .eq("id", id);
 
 
-    let pedido =
-        pedidos.find(function(pedido) {
+    if (error) {
 
-            return pedido.id === id;
+        console.error(error);
 
-        });
+        alert(
+            "No se pudo aceptar el pedido."
+        );
 
-
-    if (!pedido) {
         return;
     }
 
 
-    pedido.estado = "Aceptado";
-
-    pedido.fechaListo = null;
-
-
-    guardarPedidos(pedidos);
-
-
-    cargarPanelAdmin();
+    await cargarPanelAdmin();
 }
 
 
@@ -1299,42 +1513,39 @@ function aceptarPedido(id) {
 // MARCAR PEDIDO COMO LISTO
 // ==========================================
 
-function marcarPedidoListo(id) {
+async function marcarPedidoListo(id) {
 
-    let pedidos =
-        obtenerPedidos();
+    const { error } =
+        await supabaseClient
+            .from("pedidos")
+            .update({
+
+                estado: "Listo",
+
+                fechaListo:
+                    obtenerFechaHoy()
+
+            })
+            .eq("id", id)
+            .eq(
+                "estado",
+                "Aceptado"
+            );
 
 
-    let pedido =
-        pedidos.find(function(pedido) {
+    if (error) {
 
-            return pedido.id === id;
+        console.error(error);
 
-        });
+        alert(
+            "No se pudo marcar el pedido como listo."
+        );
 
-
-    if (!pedido) {
         return;
     }
 
 
-    if (
-        pedido.estado !== "Aceptado"
-    ) {
-        return;
-    }
-
-
-    pedido.estado = "Listo";
-
-    pedido.fechaListo =
-        obtenerFechaHoy();
-
-
-    guardarPedidos(pedidos);
-
-
-    cargarPanelAdmin();
+    await cargarPanelAdmin();
 }
 
 
@@ -1342,34 +1553,34 @@ function marcarPedidoListo(id) {
 // DENEGAR PEDIDO
 // ==========================================
 
-function denegarPedido(id) {
+async function denegarPedido(id) {
 
-    let pedidos =
-        obtenerPedidos();
+    const { error } =
+        await supabaseClient
+            .from("pedidos")
+            .update({
+
+                estado: "Denegado",
+
+                fechaListo: null
+
+            })
+            .eq("id", id);
 
 
-    let pedido =
-        pedidos.find(function(pedido) {
+    if (error) {
 
-            return pedido.id === id;
+        console.error(error);
 
-        });
+        alert(
+            "No se pudo denegar el pedido."
+        );
 
-
-    if (!pedido) {
         return;
     }
 
 
-    pedido.estado = "Denegado";
-
-    pedido.fechaListo = null;
-
-
-    guardarPedidos(pedidos);
-
-
-    cargarPanelAdmin();
+    await cargarPanelAdmin();
 }
 
 
@@ -1398,92 +1609,14 @@ function cerrarSesion() {
 
 
 // ==========================================
-// COMPATIBILIDAD CON PEDIDOS ANTIGUOS
-// ==========================================
-
-function actualizarPedidosAntiguos() {
-
-    let pedidos =
-        obtenerPedidos();
-
-
-    let huboCambios = false;
-
-
-    pedidos.forEach(function(pedido) {
-
-        if (
-            !Array.isArray(pedido.camisetas)
-        ) {
-
-            pedido.camisetas = [];
-
-
-            if (
-                pedido.equipo !== undefined ||
-                pedido.jugador !== undefined ||
-                pedido.numero !== undefined
-            ) {
-
-                pedido.camisetas.push({
-
-                    equipo:
-                        pedido.equipo || "",
-
-                    jugador:
-                        pedido.jugador || "",
-
-                    numero:
-                        pedido.numero || ""
-
-                });
-            }
-
-
-            huboCambios = true;
-        }
-
-
-        if (
-            pedido.fechaListo === undefined
-        ) {
-
-            pedido.fechaListo = null;
-
-            huboCambios = true;
-        }
-
-
-        if (
-            pedido.estado === undefined
-        ) {
-
-            pedido.estado = "Pendiente";
-
-            huboCambios = true;
-        }
-    });
-
-
-    if (huboCambios) {
-
-        guardarPedidos(pedidos);
-    }
-}
-
-
-// ==========================================
 // INICIAR PÁGINA
 // ==========================================
 
-window.onload = function() {
-
-    actualizarPedidosAntiguos();
-
+window.onload = async function() {
 
     if (usuarioActual) {
 
-        entrarAlPanel();
+        await entrarAlPanel();
 
     } else {
 
